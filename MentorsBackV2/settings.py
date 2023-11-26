@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 생성한 앱
-    'user',
-    'board',
+
+
 
     # 설치한 라이브러리
 ]
@@ -88,6 +88,8 @@ WSGI_APPLICATION = 'MentorsBackV2.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+import pymysql
+pymysql.install_as_MySQLdb()
 
 DATABASES = my_settings.DATABASES
 
