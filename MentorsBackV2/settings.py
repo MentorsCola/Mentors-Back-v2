@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 생성한 앱
-
+    'board',
 
 
     # 설치한 라이브러리
