@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if form.instance.pk %}Edit Board{% else %}New Board{% endif %}</title>
+</head>
+<body>
+    <h1>{% if form.instance.pk %}Edit Board{% else %}New Board{% endif %}</h1>
+    <form method="post" action="{% if form.instance.pk %}{% url 'board_edit' pk=form.instance.pk %}{% else %}{% url 'board_create' %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'board_list' %}">Cancel</a>
+</body>
+</html>
