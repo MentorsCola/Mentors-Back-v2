@@ -1,0 +1,17 @@
+<!-- board/templates/board/board_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ board.title }}</title>
+</head>
+<body>
+    <h1>{{ board.title }}</h1>
+    <p>Author: {{ board.author }}</p>
+    <p>Content: {{ board.content }}</p>
+    <p>Created: {{ board.dt_created }}</p>
+    <p>Modified: {{ board.dt_modified }}</p>
+    <p>Like: {{ board.like }}</p>
+    <a href="{% url 'board_edit' pk=board.pk %}">Edit</a>
+    <a href="{% url 'board_list' %}">Back to List</a>
+</body>
+</html>
