@@ -1,7 +1,7 @@
 # views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Board
-from .forms import BoardForm
+from board.forms import BoardForm
 
 
 def board_list(request):
