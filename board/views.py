@@ -1,4 +1,6 @@
 # views.py
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Board
 from board.forms import BoardForm
@@ -45,3 +47,16 @@ def board_delete(request, pk):
     board = get_object_or_404(Board, pk=pk)
     board.delete()
     return redirect('board_list')
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('board_list')  # 회원가입 후 이동할 페이지 지정
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'board/signup.html', {'form': form})
