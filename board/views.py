@@ -1,5 +1,6 @@
 # views.py
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Board
@@ -16,16 +17,19 @@ def board_detail(request, pk):
     return render(request, 'board/board_detail.html', {'board': board})
 
 
+@login_required
 def board_create(request):
     if request.method == 'POST':
         form = BoardForm(request.POST)
         if form.is_valid():
+            # 현재 로그인한 사용자를 글의 작성자로 지정
             board = form.save(commit=False)
             board.author = request.user
             board.save()
-            return redirect('board_detail', pk=board.pk)
+            return redirect('board_list')
     else:
         form = BoardForm()
+
     return render(request, 'board/board_form.html', {'form': form})
 
 
