@@ -6,6 +6,16 @@
     <title>{% block title %}My Site{% endblock %}</title>
 </head>
 <body>
-    {% block content %}{% endblock %}
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <!-- 다른 메뉴 아이템들... -->
+
+        <!-- 로그인 링크 추가 -->
+        <li><a href="{% url 'login' %}">로그인</a></li>
+    </ul>
+</nav>
+
+{% block content %}{% endblock %}
 </body>
 </html>
