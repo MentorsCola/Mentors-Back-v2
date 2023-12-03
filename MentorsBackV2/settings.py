@@ -49,10 +49,26 @@ INSTALLED_APPS = [
 
     # 생성한 앱
     'board',
+    'user',
 
 
     # 설치한 라이브러리
+    'rest_framework',
 ]
+
+# user 앱에서 내가 설정한 User를 사용하겠다고 설정한다.
+AUTH_USER_MODEL = 'user.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근
+        # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
+        # 'rest_framework.permissions.AllowAny',  # 누구나 접근
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
