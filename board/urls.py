@@ -1,6 +1,8 @@
 from django.contrib.auth.views import LoginView
 from django.urls import path
-from .views import board_list, board_detail, board_create, board_edit, board_delete, signup
+
+from user.views import board_create, signup
+from .views import board_list, board_detail, board_edit, board_delete
 
 urlpatterns = [
     path('', board_list, name='board_list'),
