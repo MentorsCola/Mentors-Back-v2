@@ -1,9 +1,8 @@
-from django.contrib.auth.views import LoginView
 from django.urls import path
 
-from user.views import signup
+from user.views import UserListView, UserDetailView
 
 urlpatterns = [
-    path('signup/', signup, name='signup'),
-    path('login/', LoginView.as_view(), name='login'),
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
 ]
