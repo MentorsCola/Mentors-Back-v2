@@ -5,11 +5,5 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-
-    def create(self, validated_data):
-        user: User = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
-        return user
+        fields = ['id', 'email', 'is_superuser', 'is_active', 'is_staff', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
