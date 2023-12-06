@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # 생성한 앱
     'board',
     'user',
+    'like',
 
     # 설치한 라이브러리
     'rest_framework',
