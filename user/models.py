@@ -72,6 +72,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             if all_nicknames:
                 random_nickname = random.choice(all_nicknames)
                 self.id_nickname = random_nickname
+                random_nickname.user_set.add(self)
             else:
                 # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
                 default_nickname = Nickname.objects.get(id=1)  # 예시로 id가 1인 닉네임을 사용
