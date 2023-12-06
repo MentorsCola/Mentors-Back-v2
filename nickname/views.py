@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from rest_framework import generics
+from nickname.models import Nickname
 
-# Create your views here.
+
+class NicknameView(generics.ListCreateAPIView):
+    queryset = Nickname.objects.all()
