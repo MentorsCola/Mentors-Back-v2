@@ -54,7 +54,7 @@ class Nickname(models.Model):
 # AbstractBaseUser를 상속해서 유저 커스텀
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
-    password = models.TextField
+    password = models.CharField(max_length=100)
     id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE, null=False)
     id = models.IntegerField
 
@@ -66,6 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def nickSave(self, *args, **kwargs):
         # 회원가입 시 자동으로 랜덤 닉네임 할당
+
         if not self.id_nickname:
             all_nicknames = Nickname.objects.all()
             if all_nicknames:
