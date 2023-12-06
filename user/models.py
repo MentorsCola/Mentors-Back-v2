@@ -56,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     password = models.CharField(max_length=100)
     id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE, null=False)
-    id = models.IntegerField
+    id = models.IntegerField(primary_key=True)
 
     # 헬퍼 클래스 사용
     objects = UserManager()
