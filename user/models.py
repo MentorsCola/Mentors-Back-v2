@@ -55,8 +55,8 @@ class Nickname(models.Model):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     password = models.CharField(max_length=100)
-    id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE, null=False)
-    id = models.IntegerField(primary_key=True)
+    id_nickname = models.ForeignKey('nickname.Nickname', on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
 
     # 헬퍼 클래스 사용
     objects = UserManager()
@@ -66,7 +66,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def nickSave(self, *args, **kwargs):
         # 회원가입 시 자동으로 랜덤 닉네임 할당
-
         if not self.id_nickname:
             all_nicknames = Nickname.objects.all()
             if all_nicknames:
@@ -79,6 +78,4 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.id_nickname = default_nickname
 
         super().save(*args, **kwargs)
-
-
 
