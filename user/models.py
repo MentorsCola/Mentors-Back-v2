@@ -55,7 +55,7 @@ class Nickname(models.Model):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     password = models.CharField(max_length=100)
-    id_nickname = models.ForeignKey('nickname.Nickname', on_delete=models.CASCADE)
+    id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE)
     id = models.AutoField(primary_key=True)
 
     # 헬퍼 클래스 사용
@@ -76,6 +76,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
                 default_nickname = Nickname.objects.get(id=1)  # 예시로 id가 1인 닉네임을 사용
                 self.id_nickname = default_nickname
+
+            # 모델 필드의 기본값을 설정
+            self._meta.get_field('id_nickname').default = self.id_nickname
 
         super().save(*args, **kwargs)
 
