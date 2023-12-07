@@ -1,51 +1,51 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from rest_framework import permissions
+from rest_framework import permissions, status
+from rest_framework.decorators import permission_classes
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .BoardSerializer import BoardSerializer
 from .models import Board
-from board.forms import BoardForm
 
 
 class BoardList(APIView):
     permission_classes = [permissions.AllowAny]
+
     def get(self, request):
         boards = Board.objects.all()
-        board_data = []
-
-        for board in boards:
-            board_data.append({
-                'id': board.id,
-                'title': board.title,
-                'nickname_author': board.nickname_author.nicknames if board.nickname_author else None,
-                'dt_created': board.dt_created,
-                'dt_modified': board.dt_modified
-            })
-
-        return JsonResponse({'boards': board_data})
+        serializer = BoardSerializer(boards, many=True)
+        return Response({'boards': serializer.data}, status=status.HTTP_200_OK)
 
 
-class Board_detail(View):
-def board_detail(request, pk):
-    board = get_object_or_404(Board, pk=pk)
-    return render(request, 'board/board_detail.html', {'board': board})
+@permission_classes([permissions.IsAuthenticated])
+class BoardDetail(APIView):
+    def get(self, request, pk):
+        board = get_object_or_404(Board, pk=pk)
+        serializer = BoardSerializer(board)
+        return JsonResponse({'board': serializer.data})
 
+    def post(self, request):
+        serializer = BoardSerializer(data=request.data)
 
-def board_edit(request, pk):
-    board = get_object_or_404(Board, pk=pk)
-    if request.method == 'POST':
-        form = BoardForm(request.POST, instance=board)
-        if form.is_valid():
-            board = form.save(commit=False)
-            board.author = request.user
-            board.save()
-            return redirect('board_detail', pk=board.pk)
-    else:
-        form = BoardForm(instance=board)
-    return render(request, 'board/board_form.html', {'form': form})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, pk):
+        board = get_object_or_404(Board, pk=pk)
+        self.check_object_permissions(request, board)
 
-def board_delete(request, pk):
-    board = get_object_or_404(Board, pk=pk)
-    board.delete()
-    return redirect('board_list')
+        serializer = BoardSerializer(board, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': '글이 성공적으로 수정되었습니다.'})
+        return JsonResponse({'error': serializer.errors}, status=400)
+
+    def delete(self, request, pk):
+        board = get_object_or_404(Board, pk=pk)
+        self.check_object_permissions(request, board)
+        board.delete()
+        return JsonResponse({'message': '글이 성공적으로 삭제되었습니다.'})
