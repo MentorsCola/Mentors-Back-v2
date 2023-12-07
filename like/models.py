@@ -10,4 +10,4 @@ class Like(models.Model):
 
 
 def __str__(self):
-        return f'{self.user} likes {self.board}'
+    return f'{self.user} likes {self.board}'
