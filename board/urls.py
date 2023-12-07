@@ -1,12 +1,11 @@
 from django.urls import path
-from .views import board_list, board_detail, board_edit, board_delete
+
+from board.views import BoardList, BoardDetail
 
 urlpatterns = [
-    path('', board_list, name='board_list'),
-
-    path('<int:pk>/', board_detail, name='board_detail'),
-    path('<int:pk>/edit/', board_edit, name='board_edit'),
-    path('<int:pk>/delete/', board_delete, name='board_delete'),
-
-
+    path('boards/', BoardList.as_view(), name='board-list'),
+    path('boards/post/', BoardDetail.as_view(), name='board-create'),
+    path('boards/get/', BoardDetail.as_view(), name='board-p-list'),
+    path('boards/put/', BoardDetail.as_view(), name='board-update'),
+    path('boards/delete/', BoardDetail.as_view(), name='board-delete'),
 ]
