@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 random_nickname.user_set.add(self)
             else:
                 # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
-                default_nickname = Nickname.objects.get(id=1)  # 예시로 id가 1인 닉네임을 사용
+                default_nickname = Nickname.objects.get(nicknames="내오늘안으로빚갚으리오")  # 예시로 id가 1인 닉네임을 사용
                 self.id_nickname = default_nickname
 
             # 모델 필드의 기본값을 설정
