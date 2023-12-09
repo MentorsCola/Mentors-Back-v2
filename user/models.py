@@ -20,6 +20,19 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_user(self, email, password=None, **extra_fields):
+        # 이메일 주소 정규화
+        email = self.normalize_email(email)
+
+        # 이미 존재하는 이메일인지 확인
+        if self.filter(email=email).exists():
+            raise ValueError('이미 등록된 이메일 주소입니다.')
+
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
     def create_superuser(self, email=None, password=None, **extra_fields):
         """
         주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
@@ -36,6 +49,8 @@ class UserManager(BaseUserManager):
 
         superuser.save(using=self._db)
         return superuser
+
+
 
 
 # AbstractBaseUser를 상속해서 유저 커스텀
@@ -68,3 +83,22 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self._meta.get_field('id_nickname').default = self.id_nickname
 
             super().save(*args, **kwargs)
+
+
+user_data = {
+    "email": "test111@email.com",
+    "password": "test11234"
+}
+
+try:
+    new_user = User.objects.create_user(**user_data)
+    new_user.nickSave()
+
+    print({
+        "id": new_user.id,
+        "email": new_user.email,
+        "password": new_user.password,
+        "id_nickname": new_user.id_nickname.nicknames if new_user.id_nickname else None
+    })
+except ValueError as e:
+    print(f"Error: {e}")
