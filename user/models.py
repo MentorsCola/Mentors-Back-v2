@@ -7,24 +7,11 @@ from nicknames.models import Nicknames
 
 # 헬퍼 클래스
 class UserManager(BaseUserManager):
-    def create_user(self, email, password, **kwargs):
-        """
-        주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
-        """
-        if not email:
-            raise ValueError('Users must have an email address')
-        user = self.model(
-            email=email,
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
 
     def create_user(self, email, password=None, **extra_fields):
-        # 이메일 주소 정규화
         email = self.normalize_email(email)
 
-        # 이미 존재하는 이메일인지 확인
+        # Check if a user with the given email already exists
         if self.filter(email=email).exists():
             raise ValueError('이미 등록된 이메일 주소입니다.')
 
@@ -51,14 +38,12 @@ class UserManager(BaseUserManager):
         return superuser
 
 
-
-
 # AbstractBaseUser를 상속해서 유저 커스텀
 class User(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     password = models.CharField(max_length=100, null=False, blank=False)
-    id_nickname = models.ForeignKey(Nicknames, on_delete=models.CASCADE)
-    id = models.AutoField(primary_key=True)
+    id_nickname = models.ForeignKey(Nicknames, on_delete=models.CASCADE, null=True, blank=True)
 
     # 헬퍼 클래스 사용
     objects = UserManager()
@@ -75,18 +60,15 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.id_nickname = random_nickname
                 random_nickname.user_set.add(self)
             else:
-                # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
+                # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용하는데 그럴 일 없음
                 default_nickname = Nicknames.objects.get(nicknames="내오늘안으로빚갚으리오")  # 예시로 id가 1인 닉네임을 사용
                 self.id_nickname = default_nickname
 
-                # 모델 필드의 기본값을 설정
-                self._meta.get_field('id_nickname').default = self.id_nickname
-
-            super().save(*args, **kwargs)
+        super(User, self).save(*args, **kwargs)
 
 
 user_data = {
-    "email": "test111@email.com",
+    "email": "test119@email.com",
     "password": "test11234"
 }
 
