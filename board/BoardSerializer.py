@@ -7,6 +7,7 @@ class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = '__all__'
+        read_only_fields = ['title', 'content']
         # fields = ['id', 'title', 'nickname_author', 'dt_created', 'dt_modified']
 
     def create(self, validated_data):
