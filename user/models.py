@@ -41,14 +41,14 @@ class UserManager(BaseUserManager):
 
 class Nickname(models.Model):
     id = models.AutoField(primary_key=True)
-    nicknames = models.CharField(max_length=255)
+    names = models.CharField(max_length=255)
 
     class Meta:
         managed = False
         db_table = NICKNAMEDB.get('NICKNAME_TABLE')  # 실제 데이터베이스 테이블의 이름
 
     def __str__(self):
-        return self.nicknames
+        return self.names
 
 
 # AbstractBaseUser를 상속해서 유저 커스텀
