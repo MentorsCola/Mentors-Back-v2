@@ -1,9 +1,8 @@
 import random
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-from my_settings import NICKNAMEDB
+from nicknames.models import Nicknames
 
 
 # 헬퍼 클래스
@@ -39,23 +38,11 @@ class UserManager(BaseUserManager):
         return superuser
 
 
-class Nickname(models.Model):
-    id = models.AutoField(primary_key=True)
-    names = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = NICKNAMEDB.get('NICKNAME_TABLE')  # 실제 데이터베이스 테이블의 이름
-
-    def __str__(self):
-        return self.names
-
-
 # AbstractBaseUser를 상속해서 유저 커스텀
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     password = models.CharField(max_length=100)
-    id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE)
+    id_nickname = models.ForeignKey(Nicknames, on_delete=models.CASCADE)
     id = models.AutoField(primary_key=True)
 
     # 헬퍼 클래스 사용
@@ -67,18 +54,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     def nickSave(self, *args, **kwargs):
         # 회원가입 시 자동으로 랜덤 닉네임 할당
         if not self.id_nickname:
-            all_nicknames = Nickname.objects.all()
+            all_nicknames = Nicknames.objects.all()
             if all_nicknames:
                 random_nickname = random.choice(all_nicknames)
                 self.id_nickname = random_nickname
                 random_nickname.user_set.add(self)
             else:
                 # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
-                default_nickname = Nickname.objects.get(nicknames="내오늘안으로빚갚으리오")  # 예시로 id가 1인 닉네임을 사용
+                default_nickname = Nicknames.objects.get(nicknames="내오늘안으로빚갚으리오")  # 예시로 id가 1인 닉네임을 사용
                 self.id_nickname = default_nickname
 
-            # 모델 필드의 기본값을 설정
-            self._meta.get_field('id_nickname').default = self.id_nickname
+                # 모델 필드의 기본값을 설정
+                self._meta.get_field('id_nickname').default = self.id_nickname
 
-        super().save(*args, **kwargs)
-
+            super().save(*args, **kwargs)
