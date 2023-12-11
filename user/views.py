@@ -1,4 +1,6 @@
+from django.contrib.auth import authenticate
 from rest_framework import generics, permissions, status
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -22,8 +24,37 @@ class UserAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+
+            # Generate a token for the newly registered user
+            token, created = Token.objects.get_or_create(user=user)
+
+            return Response({
+                'user_id': user.id,
+                'email': user.email,
+                'token': token.key,
+            }, status=status.HTTP_201_CREATED)
         else:
-            print(serializer.errors)  # 디버그 출력 추가
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Authenticate the user
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            # Create or retrieve an authentication token for the user
+            token, created = Token.objects.get_or_create(user=user)
+
+            # Return the user data along with the token
+            return Response({
+                'user_id': user.id,
+                'email': user.email,
+                'token': token.key,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
