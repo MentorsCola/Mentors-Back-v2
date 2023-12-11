@@ -62,11 +62,13 @@ AUTH_USER_MODEL = 'user.User'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',  # 인증된 사용자만 접근
         # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
         # 'rest_framework.permissions.AllowAny',  # 누구나 접근
-        'rest_framework.authentication.TokenAuthentication',
     ),
 
 }
