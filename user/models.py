@@ -2,21 +2,32 @@ import random
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from rest_framework.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
-from my_settings import NICKNAMEDB
+
+from nicknames.models import Nicknames
 
 
 # 헬퍼 클래스
 class UserManager(BaseUserManager):
-    def create_user(self, email, password, **kwargs):
-        """
-        주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
-        """
-        if not email:
-            raise ValueError('Users must have an email address')
-        user = self.model(
-            email=email,
-        )
+
+    def create_user(self, email, password=None, **extra_fields):
+        email = self.normalize_email(email)
+
+        def clean(self):
+            try:
+                validate_email(self.email)
+            except ValidationError as e:
+                raise ValidationError({'email': 'Invalid email address'}) from e
+
+
+        # Check if a user with the given email already exists
+        if self.filter(email=email).exists():
+            raise ValueError('이미 등록된 이메일 주소입니다.')
+
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -39,24 +50,12 @@ class UserManager(BaseUserManager):
         return superuser
 
 
-class Nickname(models.Model):
-    id = models.AutoField(primary_key=True)
-    nicknames = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = NICKNAMEDB.get('NICKNAME_TABLE')  # 실제 데이터베이스 테이블의 이름
-
-    def __str__(self):
-        return self.nicknames
-
-
 # AbstractBaseUser를 상속해서 유저 커스텀
 class User(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
-    password = models.CharField(max_length=100)
-    id_nickname = models.ForeignKey(Nickname, on_delete=models.CASCADE, null=False)
-    id = models.IntegerField(primary_key=True)
+    password = models.CharField(max_length=100, null=False, blank=False)
+    id_nickname = models.ForeignKey(Nicknames, on_delete=models.CASCADE, null=True, blank=True)
 
     # 헬퍼 클래스 사용
     objects = UserManager()
@@ -65,20 +64,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     def nickSave(self, *args, **kwargs):
-        # 회원가입 시 자동으로 랜덤 닉네임 할당
+        print(f"id_nickname before: {self.id_nickname}")
 
         if not self.id_nickname:
-            all_nicknames = Nickname.objects.all()
+            all_nicknames = Nicknames.objects.all()
             if all_nicknames:
                 random_nickname = random.choice(all_nicknames)
                 self.id_nickname = random_nickname
                 random_nickname.user_set.add(self)
-            else:
-                # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용
-                default_nickname = Nickname.objects.get(id=1)  # 예시로 id가 1인 닉네임을 사용
-                self.id_nickname = default_nickname
 
         super().save(*args, **kwargs)
-
-
-
