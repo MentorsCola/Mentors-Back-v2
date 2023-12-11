@@ -1,6 +1,11 @@
 import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from rest_framework.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 
 from nicknames.models import Nicknames
 
@@ -10,6 +15,13 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         email = self.normalize_email(email)
+
+        def clean(self):
+            try:
+                validate_email(self.email)
+            except ValidationError as e:
+                raise ValidationError({'email': 'Invalid email address'}) from e
+
 
         # Check if a user with the given email already exists
         if self.filter(email=email).exists():
@@ -52,35 +64,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
     def nickSave(self, *args, **kwargs):
-        # 회원가입 시 자동으로 랜덤 닉네임 할당
+        print(f"id_nickname before: {self.id_nickname}")
+
         if not self.id_nickname:
             all_nicknames = Nicknames.objects.all()
             if all_nicknames:
                 random_nickname = random.choice(all_nicknames)
                 self.id_nickname = random_nickname
                 random_nickname.user_set.add(self)
-            else:
-                # 만약 닉네임이 하나도 없다면 기본 닉네임 또는 다른 로직을 적용하는데 그럴 일 없음
-                default_nickname = Nicknames.objects.get(nicknames="내오늘안으로빚갚으리오")  # 예시로 id가 1인 닉네임을 사용
-                self.id_nickname = default_nickname
 
-        super(User, self).save(*args, **kwargs)
-
-
-user_data = {
-    "email": "test119@email.com",
-    "password": "test11234"
-}
-
-try:
-    new_user = User.objects.create_user(**user_data)
-    new_user.nickSave()
-
-    print({
-        "id": new_user.id,
-        "email": new_user.email,
-        "password": new_user.password,
-        "id_nickname": new_user.id_nickname.nicknames if new_user.id_nickname else None
-    })
-except ValueError as e:
-    print(f"Error: {e}")
+        super().save(*args, **kwargs)
