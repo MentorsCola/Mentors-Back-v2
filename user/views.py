@@ -38,9 +38,6 @@ class UserAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-CSRF_TRUSTED_ORIGINS = ["http://http://127.0.0.1:8000/user/login/"]
-
-
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
