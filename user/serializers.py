@@ -7,7 +7,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'password', 'id_nickname']
 
-    def validate_email(self, value):
-        if not value.strip():  # Ensure email is not empty or just whitespace
-            raise serializers.ValidationError("Email cannot be empty.")
-        return value
+    def create(self, validated_data):
+        # 비밀번호를 암호화하여 저장
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+        )
+
+
+
