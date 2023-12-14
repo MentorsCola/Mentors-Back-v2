@@ -8,5 +8,5 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user-list, user-signup'),
     path('login/', LoginAPIView.as_view(), name='user-login'),
     path('logout/', Logout.as_view(), name='user-logout'),
-    path("auth/refresh/", TokenRefreshView.as_view()), # jwt 토큰 재발급
+    path('auth/refresh/', TokenRefreshView.as_view()), # jwt 토큰 재발급
 ]
