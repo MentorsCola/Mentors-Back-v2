@@ -1,11 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, permissions, status
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import UserSerializer
 
@@ -48,7 +45,6 @@ class RegisterAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@permission_classes([AllowAny])
 class LoginAPIView(APIView):
     def post(self, request):
         # 유저 인증
