@@ -1,3 +1,5 @@
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import User
 from rest_framework import serializers
 
@@ -8,13 +10,25 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email', 'password', 'id_nickname']
 
     def create(self, validated_data):
-        # 비밀번호를 암호화하여 저장
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
         )
 
-        return user
+        # 다른 필드들도 필요에 따라 추가
+
+        # 토큰 발행
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        # 반환할 정보 구성
+        response_data = {
+            'email': user.email,
+            'id_nickname': user.id_nickname,  # 이 부분은 필드에 따라서 적절한 방식으로 변경
+            'token': access_token,
+        }
+
+        return response_data
 
 
 
