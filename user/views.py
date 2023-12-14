@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
 from .serializers import UserSerializer
 
 User = get_user_model()
