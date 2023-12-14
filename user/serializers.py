@@ -1,3 +1,5 @@
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
@@ -15,8 +17,6 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
         )
 
-        # 다른 필드들도 필요에 따라 추가
-
         # 토큰 발행
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
@@ -29,6 +29,4 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
         return response_data
-
-
-
+)
