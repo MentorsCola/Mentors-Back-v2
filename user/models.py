@@ -22,8 +22,6 @@ class UserManager(BaseUserManager):
             except ValidationError as e:
                 raise ValidationError({'email': 'Invalid email address'}) from e
 
-
-        # Check if a user with the given email already exists
         if self.filter(email=email).exists():
             raise ValueError('이미 등록된 이메일 주소입니다.')
 

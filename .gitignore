@@ -97,6 +97,7 @@ ENV/
 user/migrations
 board/migrations
 like/migrations
+nicknames/migrations
 
 secrets.json
 my_settings.py
